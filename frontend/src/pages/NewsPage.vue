@@ -1,14 +1,15 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useHead } from '@unhead/vue'
+import { apiClient } from '../services/api'
 
 const articles = ref([])
 const isLoading = ref(true)
 
 onMounted(async () => {
   try {
-    const res = await fetch('/api/news')
-    const data = await res.json()
+    const res = await apiClient.get('/news')
+    const data = res.data
     articles.value = Array.isArray(data) ? data : []
   } catch (e) {
     console.error('Failed to load news:', e)

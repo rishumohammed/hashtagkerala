@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useHead } from '@unhead/vue'
+import { apiClient } from '../services/api'
 
+const siteSettings = ref({})
 const socialLinks = ref({
   instagram: 'https://www.instagram.com/hashtag_kerala?igsh=MXc2YWowa3JhZnE1NA==',
   facebook: 'https://www.facebook.com/share/1BwppcFDfW/',
@@ -10,9 +12,10 @@ const socialLinks = ref({
 
 onMounted(async () => {
   try {
-    const res = await fetch('/api/settings')
-    const data = await res.json()
+    const res = await apiClient.get('/settings')
+    const data = res.data
     if (data) {
+      siteSettings.value = data
       if (data.social_instagram) socialLinks.value.instagram = data.social_instagram
       if (data.social_youtube) socialLinks.value.youtube = data.social_youtube
       if (data.social_facebook) socialLinks.value.facebook = data.social_facebook
@@ -94,7 +97,7 @@ const collaborations = [
       <div class="relative z-10 flex h-full flex-col items-center justify-center text-center py-12">
         <span class="eyebrow text-white/80">Our Story</span>
         <h1 class="mt-5 max-w-3xl font-heading text-5xl leading-tight sm:text-7xl lg:text-8xl">
-          About Hashtag Kerala
+          {{ siteSettings.about_title || 'About Hashtag Kerala' }}
         </h1>
         <p class="mt-6 max-w-2xl text-base text-white/75 sm:text-lg">
           Discover Kerala. Stay Better. Experience More.
@@ -111,9 +114,7 @@ const collaborations = [
             More Than Just a Travel Platform
           </h2>
           <p class="text-lg leading-relaxed text-stone-600 dark:text-stone-300">
-            Hashtag Kerala is built around two connected strengths —
-            <strong class="text-brand-primary">digital influence</strong> and
-            <strong class="text-brand-primary">hospitality discovery.</strong>
+            {{ siteSettings.about_content || 'Hashtag Kerala is built around two connected strengths — digital influence and hospitality discovery.' }}
           </p>
           <p class="text-base leading-relaxed text-stone-600 dark:text-stone-300">
             Through our website, visitors can explore hotels and stays across Kerala, organised
@@ -321,17 +322,13 @@ const collaborations = [
         <div class="surface-glass rounded-[1.75rem] p-8 space-y-4">
           <h3 class="font-heading text-2xl text-brand-primary">Our Mission</h3>
           <p class="text-sm leading-7 text-stone-600 dark:text-stone-400">
-            To make discovering and experiencing Kerala easier, more accessible and more valuable
-            for everyone — from peaceful hill stations and scenic resorts to hotels, homestays and
-            unique stays across the state.
+            {{ siteSettings.about_mission || 'To make discovering and experiencing Kerala easier, more accessible and more valuable for everyone — from peaceful hill stations and scenic resorts to hotels, homestays and unique stays across the state.' }}
           </p>
         </div>
         <div class="surface-glass rounded-[1.75rem] p-8 space-y-4">
           <h3 class="font-heading text-2xl text-brand-primary">Our Vision</h3>
           <p class="text-sm leading-7 text-stone-600 dark:text-stone-400">
-            To build Hashtag Kerala into a trusted digital destination for discovering the best
-            places to stay, visit and experience across Kerala — benefiting both travellers and
-            Kerala's hospitality and tourism businesses.
+            {{ siteSettings.about_vision || "To build Hashtag Kerala into a trusted digital destination for discovering the best places to stay, visit and experience across Kerala — benefiting both travellers and Kerala's hospitality and tourism businesses." }}
           </p>
         </div>
       </div>

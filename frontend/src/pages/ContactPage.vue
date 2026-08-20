@@ -1,51 +1,47 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useHead } from '@unhead/vue'
+import { apiClient } from '../services/api'
 
 const form = ref({
   name: '',
   email: '',
+  phone: '',
   subject: '',
   message: ''
 })
 
+const siteSettings = ref({})
 const isSubmitting = ref(false)
 const statusMessage = ref('')
 const isSuccess = ref(false)
+
+onMounted(async () => {
+  try {
+    const res = await apiClient.get('/settings')
+    siteSettings.value = res.data || {}
+  } catch (e) {
+    console.error('Failed to load settings:', e)
+  }
+})
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   statusMessage.value = ''
   
   try {
-    const res = await fetch('/api/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(form.value)
-    })
-    
-    const data = await res.json()
-    
-    if (res.ok) {
-      isSuccess.value = true
-      statusMessage.value = data.message || 'Thank you! Your message has been sent.'
-      form.value = { name: '', email: '', subject: '', message: '' }
-    } else {
-      isSuccess.value = false
-      statusMessage.value = data.errors ? Object.values(data.errors).flat().join(' ') : 'Something went wrong. Please try again.'
-    }
+    const res = await apiClient.post('/contact', form.value)
+    isSuccess.value = true
+    statusMessage.value = res.data?.message || 'Thank you! Your message has been sent.'
+    form.value = { name: '', email: '', phone: '', subject: '', message: '' }
   } catch (e) {
     isSuccess.value = false
-    statusMessage.value = 'Failed to send message. Please check your connection.'
+    const errData = e.response?.data
+    statusMessage.value = errData?.errors 
+      ? Object.values(errData.errors).flat().join(' ') 
+      : (errData?.message || 'Something went wrong. Please try again.')
   } finally {
-    isSubmitting.value = true
-    // Artificially wait for a better UX feeling
-    setTimeout(() => {
-      isSubmitting.value = false
-    }, 1000)
+    isSubmitting.value = false
   }
 }
 
@@ -86,7 +82,7 @@ useHead({
                   </div>
                   <div class="space-y-1">
                      <p class="text-sm font-semibold uppercase tracking-widest text-stone-500">Email Address</p>
-                     <p class="text-xl dark:text-white">Hashtaggroup9229@gmail.com</p>
+                     <p class="text-xl dark:text-white">{{ siteSettings.contact_email || 'Hashtaggroup9229@gmail.com' }}</p>
                   </div>
                </div>
 
@@ -97,7 +93,7 @@ useHead({
                   </div>
                   <div class="space-y-1">
                      <p class="text-sm font-semibold uppercase tracking-widest text-stone-500">Contact Number</p>
-                     <p class="text-xl dark:text-white">+91 99611 99229</p>
+                     <p class="text-xl dark:text-white">{{ siteSettings.contact_phone || '+91 99611 99229' }}</p>
                   </div>
                </div>
 
@@ -108,7 +104,7 @@ useHead({
                   </div>
                   <div class="space-y-1">
                      <p class="text-sm font-semibold uppercase tracking-widest text-stone-500">Our Location</p>
-                     <p class="text-xl dark:text-white">Wayanad, India, Kerala</p>
+                     <p class="text-xl dark:text-white">{{ siteSettings.contact_address || 'Wayanad, India, Kerala' }}</p>
                   </div>
                </div>
             </div>
@@ -127,9 +123,15 @@ useHead({
                      <input v-model="form.email" type="email" required class="input-field" placeholder="john@example.com" />
                   </div>
                </div>
-               <div class="space-y-2">
-                  <label class="text-xs font-semibold uppercase tracking-widest text-stone-500">Subject</label>
-                  <input v-model="form.subject" type="text" class="input-field" placeholder="Inquiry about..." />
+               <div class="grid gap-6 sm:grid-cols-2">
+                  <div class="space-y-2">
+                     <label class="text-xs font-semibold uppercase tracking-widest text-stone-500">Phone Number</label>
+                     <input v-model="form.phone" type="tel" required class="input-field" placeholder="+91 98765 43210" />
+                  </div>
+                  <div class="space-y-2">
+                     <label class="text-xs font-semibold uppercase tracking-widest text-stone-500">Subject</label>
+                     <input v-model="form.subject" type="text" class="input-field" placeholder="Inquiry about..." />
+                  </div>
                </div>
                <div class="space-y-2">
                   <label class="text-xs font-semibold uppercase tracking-widest text-stone-500">Your Message</label>

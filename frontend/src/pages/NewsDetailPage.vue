@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
+import { apiClient } from '../services/api'
 
 const route = useRoute()
 const article = ref(null)
@@ -9,10 +10,8 @@ const isLoading = ref(true)
 
 onMounted(async () => {
   try {
-    const res = await fetch(`/api/news/${route.params.slug}`)
-    if (res.ok) {
-      article.value = await res.json()
-    }
+    const res = await apiClient.get(`/news/${route.params.slug}`)
+    article.value = res.data
   } catch (e) {
     console.error('Failed to load article detail:', e)
   } finally {

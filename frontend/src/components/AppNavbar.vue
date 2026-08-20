@@ -93,9 +93,9 @@ onBeforeUnmount(() => {
           </svg>
         </button>
 
-        <button type="button" class="btn-primary hidden sm:inline-flex">
+        <RouterLink :to="{ name: 'contact' }" class="btn-primary hidden sm:inline-flex">
           Contact
-        </button>
+        </RouterLink>
 
         <button
           type="button"
@@ -173,9 +173,9 @@ onBeforeUnmount(() => {
                 </button>
               </div>
 
-              <button type="button" class="btn-primary w-full">
+              <RouterLink :to="{ name: 'contact' }" class="btn-primary w-full text-center" @click="closeMenu">
                 Contact
-              </button>
+              </RouterLink>
             </div>
           </div>
         </div>
