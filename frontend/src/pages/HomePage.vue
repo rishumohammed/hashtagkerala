@@ -396,7 +396,7 @@ const categories = ref([
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center lg:justify-end">
           <a href="#districts" class="btn-primary cursor-pointer text-center">Start exploring</a>
           <RouterLink :to="{ name: 'contact' }" class="group flex items-center justify-center text-sm font-medium text-stone-600 transition-colors hover:text-stone-900 dark:text-stone-300 dark:hover:text-white">
-            Talk to concierge
+            Talk to support
             <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
